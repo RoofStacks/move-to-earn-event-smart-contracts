@@ -15,4 +15,4 @@ _GoArt's Move To Earn Campaign Smart Contract to give away MATIC tokens to users
 ### GoArtCampaign Contract
 
 - **Deployed to Polygon Testnet Mumbai**
-- **Contract address:** `0x5087Cb4d1e7640D4889f3d5164aff08b1550a7CC`
+- **Contract address:** `0x685392070b08f073311528c7a0E00E3E426d7AC6`

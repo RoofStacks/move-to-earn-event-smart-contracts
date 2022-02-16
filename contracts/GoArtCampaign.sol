@@ -13,12 +13,9 @@ contract GoArtCampaign {
 	using SafeMath for uint256;
 
 	// contract's states are defined here.
-	enum State {
-		Active,
-		Closed
-	}
+	enum State {Active,Closed}
 
-	State public state;
+	State public state = State.Closed;
 
 	uint256 public maxRewardTotal = 200000 ether;
 	uint256 public totalDistributedReward;
@@ -33,7 +30,7 @@ contract GoArtCampaign {
 	uint256 minimumAmountToWithdraw = 1 ether;
 
 	// point to reward ratio
-	uint256 ratio = 20;
+	uint ratio = 20;
 
 	// Participant structure for players
 	struct Participant {
@@ -133,11 +130,8 @@ contract GoArtCampaign {
 	}
 
 	// register a user's wallet address if the contract is in Active state.
-	function registerWallet(address payable walletAddress, string memory userId)
-		external
-		onlyAdmin
-	{
-		require(state == State.Active, 'Contract is not in active state at the moment!');
+	function registerWallet(address payable walletAddress, string memory userId) external onlyAdmin {
+		require(state == State.Active, "Contract is not in active state at the moment!");
 		require(
 			!walletsRegistered[walletAddress],
 			'This wallet has been used to register earlier.'
@@ -154,15 +148,9 @@ contract GoArtCampaign {
 	}
 
 	// A user's collectible items can be swapped to MATIC through this function.
-	function swapCollectibleItemsToMatic(uint256 _collectibleItemAmount, uint256 _participantIndex)
-		external
-		onlyAdmin
-	{
-		require(state == State.Active, 'Contract is not in active state at the moment!');
-		require(
-			_collectibleItemAmount > 0,
-			'_collectibleItemAmount to be swapped has to be greater than 0.'
-		);
+	function swapCollectibleItemsToMatic(uint256 _collectibleItemAmount, uint256 _participantIndex) external onlyAdmin {
+		require(state == State.Active, "Contract is not in active state at the moment!");
+		require(_collectibleItemAmount > 0, '_collectibleItemAmount to be swapped has to be greater than 0.');
 
 		Participant storage participant = participants[_participantIndex];
 		uint256 maticAmount = _collectibleItemAmount.div(ratio);
@@ -181,22 +169,17 @@ contract GoArtCampaign {
 		require(success, 'Transfer failed during sending Matic tokens');
 	}
 
-	function withdrawMaticTokens(uint256 _participantIndex) external payable onlyAdmin {
-		require(state == State.Active, 'Contract is not in active state at the moment!');
-		require(
-			msg.value >= minimumAmountToWithdraw,
-			'You can withdraw minimum 1 MATIC. Anything below is not allowed.'
-		);
+	function withdrawMaticTokens(uint256 _participantIndex)
+		external
+		payable
+		onlyAdmin
+	{
+		require(state == State.Active, "Contract is not in active state at the moment!");
+		require(msg.value >= minimumAmountToWithdraw, "You can withdraw minimum 1 MATIC. Anything below is not allowed.");
 
-		uint256 amountToBeWithdrawn = (msg.value.div(100).mul(99)); // 99% of the price will go to the participant.
+		uint256 amountToBeWithdrawn = msg.value.sub(fee);
 
-		// 1% is deducted as service fee
-		uint256 feePortion = (msg.value.div(100).mul(1)); // 1% is deducted.
-
-		require(
-			totalDistributedReward + msg.value <= maxRewardTotal,
-			'Given amount exceeds the total reward to be distributed from this contract'
-		);
+		require(totalDistributedReward + msg.value <= maxRewardTotal, "Given amount exceeds the total reward to be distributed from this contract");
 
 		Participant storage participant = participants[_participantIndex];
 		require(
@@ -213,7 +196,7 @@ contract GoArtCampaign {
 		// transfer the funds
 		sendMatic(participant.walletAddress, amountToBeWithdrawn);
 		// get the service fee
-		sendMatic(fundingWallet, feePortion);
+		sendMatic(fundingWallet,fee);
 
 		totalDistributedReward = totalDistributedReward.add(msg.value);
 
