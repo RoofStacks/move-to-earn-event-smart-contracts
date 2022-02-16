@@ -1,0 +1,27 @@
+{
+  "name": "move-to-earn-event-smart-contracts",
+  "version": "1.0.0",
+  "description": "move to earn event smart contract",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roofstacks/move-to-earn-event-smart-contracts.git"
+  },
+  "author": "tunahandag",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/roofstacks/move-to-earn-event-smart-contracts/issues"
+  },
+  "homepage": "https://github.com/roofstacks/move-to-earn-event-smart-contracts#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "@truffle/hdwallet-provider": "^2.0.3",
+    "dotenv": "^16.0.0"
+  }
+}
