@@ -30,7 +30,7 @@ contract GoArtCampaign {
 	uint256 minimumAmountToWithdraw = 1 ether;
 
 	// point to reward ratio
-	uint ratio = 20;
+	uint ratio = 10;
 
 	// Participant structure for players
 	struct Participant {
@@ -127,6 +127,11 @@ contract GoArtCampaign {
 	// Change the contract's max reward amount
 	function changeMaxReward(uint256 _maxReward) external onlyAdmin {
 		maxRewardTotal = _maxReward;
+	}
+
+	// change award ration
+	function changeRatio(uint256 _ratio) external onlyAdmin {
+		ratio = _ratio;
 	}
 
 	// register a user's wallet address if the contract is in Active state.
