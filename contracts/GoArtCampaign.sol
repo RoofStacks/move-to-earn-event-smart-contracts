@@ -268,7 +268,7 @@ contract GoArtCampaign {
 	}
 
 	// change the funding wallet
-	function changeFundingWallet() external onlyAdmin {
-		fundingWallet = payable(msg.sender);
+	function changeFundingWallet(address _walletAddress) external onlyAdmin {
+		fundingWallet = payable(_walletAddress);
 	}
 }
