@@ -6,7 +6,7 @@ import '@openzeppelin/contracts/utils/math/SafeMath.sol';
 
 /**
  * @title GoArtCampaign
- * @dev Distribute MATIC tokens in exchange for GoArt Colletible Items collected within in the GoArt game.
+ * @dev Distribute MATIC tokens in exchange for GoArt MTE Points collected within in the GoArt game.
  */
 contract GoArtCampaign {
 	// using SafeMath to prevent underflow & overflow bugs
@@ -15,7 +15,8 @@ contract GoArtCampaign {
 	// contract's states are defined here.
 	enum State {
 		Active,
-		Closed
+		Closed,
+		Finalized
 	}
 
 	State public state = State.Closed;
@@ -24,7 +25,7 @@ contract GoArtCampaign {
 	uint256 public totalDistributedReward;
 
 	// funding wallet of the contract
-	address payable public fundingWallet;
+	address payable public treasuryWallet;
 
 	// service cost set by us
 	uint256 public fee = 0.1 ether;
@@ -60,8 +61,9 @@ contract GoArtCampaign {
 
 	// event for EVM logging
 	event ParticipantRegistered(address walletAddress, string userId, uint256 participantIndex);
-	event CollectibleItemSwapped(uint256 totalAmount, uint256 participantIndex);
+	event MTEPointSwapped(uint256 totalAmount, uint256 participantIndex);
 	event MaticWithdrawn(uint256 amount, uint256 participantIndex);
+	event StateChanged(uint8 state);
 
 	// Modifier restricting access to only admin
 	modifier onlyAdmin() {
@@ -71,7 +73,7 @@ contract GoArtCampaign {
 
 	// Constructor to set initial admins during deployment
 	constructor() {
-		fundingWallet = payable(msg.sender);
+		treasuryWallet = payable(msg.sender);
 		admins.push(msg.sender);
 		isAdmin[msg.sender] = true;
 		totalDistributedReward = 0;
@@ -117,14 +119,13 @@ contract GoArtCampaign {
 		return admins;
 	}
 
-	// Set contract State as Active
-	function setStateActive() external onlyAdmin {
-		state = State.Active;
-	}
-
-	// Set contract State as Closed
-	function setStateClosed() external onlyAdmin {
-		state = State.Closed;
+	// Change the current state of the contract
+	function changeState(uint8 _state) external onlyAdmin {
+		require(_state <= uint8(State.Finalized), 'Given state is not a valid state');
+		// change the state to given state index.
+		state = State(_state);
+		// emit the changed state.
+		emit StateChanged(_state);
 	}
 
 	// See the current state
@@ -163,22 +164,22 @@ contract GoArtCampaign {
 		emit ParticipantRegistered(walletAddress, userId, participants.length - 1);
 	}
 
-	// A user's collectible items can be swapped to MATIC through this function.
-	function swapCollectibleItemsToMatic(uint256 _collectibleItemAmount, uint256 _participantIndex)
+	// A user's MTE points can be swapped to MATIC through this function.
+	function swapMTEPointsToMatic(uint256 _MTEPointsItemAmount, uint256 _participantIndex)
 		external
 		onlyAdmin
 	{
-		require(state == State.Active, 'Contract is not in active state at the moment!');
+		require(state != State.Finalized, 'Contract is finalized. You cannot swap!');
 		require(
-			_collectibleItemAmount > 0,
-			'_collectibleItemAmount to be swapped has to be greater than 0.'
+			_MTEPointsItemAmount > 0,
+			'_MTEPointsItemAmount to be swapped has to be greater than 0.'
 		);
 
 		Participant storage participant = participants[_participantIndex];
-		uint256 maticAmount = _collectibleItemAmount.div(ratio);
+		uint256 maticAmount = _MTEPointsItemAmount.div(ratio);
 		participant.claimable = participant.claimable.add(maticAmount);
 
-		emit CollectibleItemSwapped(participant.claimable, _participantIndex);
+		emit MTEPointSwapped(participant.claimable, _participantIndex);
 	}
 
 	// return all participants
@@ -192,7 +193,7 @@ contract GoArtCampaign {
 	}
 
 	function withdrawMaticTokens(uint256 _participantIndex) external payable onlyAdmin {
-		require(state == State.Active, 'Contract is not in active state at the moment!');
+		require(state != State.Finalized, 'Contract is finalized. You cannot withdraw!');
 		require(
 			msg.value >= minimumAmountToWithdraw,
 			'You can withdraw minimum 1 MATIC. Anything below is not allowed.'
@@ -220,7 +221,7 @@ contract GoArtCampaign {
 		// transfer the funds
 		sendMatic(participant.walletAddress, amountToBeWithdrawn);
 		// get the service fee
-		sendMatic(fundingWallet, fee);
+		sendMatic(treasuryWallet, fee);
 
 		totalDistributedReward = totalDistributedReward.add(msg.value);
 
@@ -268,7 +269,7 @@ contract GoArtCampaign {
 	}
 
 	// change the funding wallet
-	function changeFundingWallet(address _walletAddress) external onlyAdmin {
-		fundingWallet = payable(_walletAddress);
+	function changeTreasuryWallet(address _walletAddress) external onlyAdmin {
+		treasuryWallet = payable(_walletAddress);
 	}
 }

@@ -11,8 +11,9 @@ _GoArt's Move To Earn Campaign Smart Contract to give away MATIC tokens to users
 - `$ truffle compile` - _Compile all contracts_
 - `$ truffle test` - _Run all tests_
 - `$ truffle deploy --network matic` - _Deploy on the Polygon Tesnet Mumbai_
+- `$ truffle run verify GoArtCampaign --network matic` - _Verify contract on the Polygonscan Tesnet Mumbai_
 
 ### GoArtCampaign Contract
 
 - **Deployed to Polygon Testnet Mumbai**
-- **Contract address:** `0x6d92325050160a5dFaAb4635E834C10a44884c71`
+- **Contract address:** `0x77AA4F1A75B6dAe3cceDd5561Cf7aBB0f76913Ca`
