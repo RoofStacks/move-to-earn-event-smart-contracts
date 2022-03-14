@@ -64,6 +64,8 @@ contract GoArtCampaign {
 	event MTEPointSwapped(uint256 totalAmount, uint256 participantIndex);
 	event MaticWithdrawn(uint256 amount, uint256 participantIndex);
 	event StateChanged(uint8 state);
+	event ParticipantCollectiblesUpdated(uint256 index);
+	event ParticipantIdUpdated(uint256 index, string uid);
 
 	// Modifier restricting access to only admin
 	modifier onlyAdmin() {
@@ -271,5 +273,38 @@ contract GoArtCampaign {
 	// change the funding wallet
 	function changeTreasuryWallet(address _walletAddress) external onlyAdmin {
 		treasuryWallet = payable(_walletAddress);
+	}
+
+	// Participant functions
+
+	// get a single participant by index
+	function getParticipant(uint256 index) public view returns (Participant memory) {
+		return participants[index];
+	}
+
+	// get number of participants
+	function getTotalParticipants() public view returns (uint256) {
+		return participants.length;
+	}
+
+	// update the participant
+	function updateParticipantClaims(
+		uint256 index,
+		uint256 claimed,
+		uint256 claimable
+	) external onlyAdmin {
+		Participant storage participant = participants[index];
+		participant.claimed = claimed;
+		participant.claimable = claimable;
+		emit ParticipantCollectiblesUpdated(index);
+	}
+
+	// update userId in case of an emergency
+	function updateParticipantId(uint256 index, string memory uid) external onlyAdmin {
+		require(!userIdsRegistered[uid], 'This user id is registered earlier.');
+		Participant storage participant = participants[index];
+		participant.userId = uid;
+		userIdsRegistered[uid] = true;
+		emit ParticipantIdUpdated(index, uid);
 	}
 }
