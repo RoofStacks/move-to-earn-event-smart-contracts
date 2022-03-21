@@ -55,6 +55,11 @@ event ParticipantRegistered(address  walletAddress, string  userId, uint256  par
 event MTEPointSwapped(uint256  totalAmount, uint256  participantIndex);
 event MaticWithdrawn(uint256  amount, uint256  participantIndex);
 event StateChanged(uint8  state);
+event MaxRewardUpdated(uint256  maxReward);
+event RatioUpdated(uint256  ratio);
+event ServiceFeeUpdated(uint256  fee);
+event TreasuryWalletUpdated(address  walletAddress);
+event MinimumAmountUpdated(uint256  minimumAmount);
 event ParticipantCollectiblesUpdated(uint256  index);
 event ParticipantIdUpdated(uint256  index, string  uid);
 ```
@@ -105,6 +110,8 @@ modifier onlyAdmin() internal
 
 ### 
 
+Constructor to set initial admins during deployment
+
 ```js
 function () public nonpayable
 ```
@@ -116,6 +123,8 @@ function () public nonpayable
 
 ### addAdmin
 
+register a new admin with the given wallet address
+
 ```js
 function addAdmin(address _adminAddress) external nonpayable onlyAdmin 
 ```
@@ -124,9 +133,11 @@ function addAdmin(address _adminAddress) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _adminAddress | address |  | 
+| _adminAddress | address | admin address to be added | 
 
 ### removeAdmin
+
+remove an existing admin address
 
 ```js
 function removeAdmin(address _adminAddress) external nonpayable onlyAdmin 
@@ -136,7 +147,7 @@ function removeAdmin(address _adminAddress) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _adminAddress | address |  | 
+| _adminAddress | address | admin address to be removed | 
 
 ### getAllAdmins
 
@@ -152,6 +163,8 @@ returns(address[])
 
 ### changeState
 
+Change the current state of the contractregister a new admin with the given wallet address
+
 ```js
 function changeState(uint8 _state) external nonpayable onlyAdmin 
 ```
@@ -160,7 +173,7 @@ function changeState(uint8 _state) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _state | uint8 |  | 
+| _state | uint8 | new state to be set | 
 
 ### getState
 
@@ -176,6 +189,8 @@ returns(enum GoArtCampaign.State)
 
 ### changeMaxReward
 
+Change the contract's max reward amount
+
 ```js
 function changeMaxReward(uint256 _maxReward) external nonpayable onlyAdmin 
 ```
@@ -184,9 +199,11 @@ function changeMaxReward(uint256 _maxReward) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _maxReward | uint256 |  | 
+| _maxReward | uint256 | new max reward | 
 
 ### changeRatio
+
+Change award ratio
 
 ```js
 function changeRatio(uint256 _ratio) external nonpayable onlyAdmin 
@@ -196,9 +213,11 @@ function changeRatio(uint256 _ratio) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _ratio | uint256 |  | 
+| _ratio | uint256 | new award ratio | 
 
 ### registerWallet
+
+Register a user's wallet address if the contract is in Active state.
 
 ```js
 function registerWallet(address payable walletAddress, string userId) external nonpayable onlyAdmin 
@@ -208,10 +227,12 @@ function registerWallet(address payable walletAddress, string userId) external n
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| walletAddress | address payable |  | 
-| userId | string |  | 
+| walletAddress | address payable | wallet address to be registered | 
+| userId | string | userId of the new user to be registered | 
 
 ### swapMTEPointsToMatic
+
+A user's MTE points can be swapped to MATIC through this function.
 
 ```js
 function swapMTEPointsToMatic(uint256 _MTEPointsItemAmount, uint256 _participantIndex) external nonpayable onlyAdmin 
@@ -221,8 +242,8 @@ function swapMTEPointsToMatic(uint256 _MTEPointsItemAmount, uint256 _participant
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _MTEPointsItemAmount | uint256 |  | 
-| _participantIndex | uint256 |  | 
+| _MTEPointsItemAmount | uint256 | Amount of MTE points to be swapped | 
+| _participantIndex | uint256 | Participant index | 
 
 ### getAllParticipants
 
@@ -238,6 +259,8 @@ returns(struct GoArtCampaign.Participant[])
 
 ### sendMatic
 
+Transfer MATIC to given address.
+
 ```js
 function sendMatic(address payable wallet, uint256 amount) internal nonpayable
 ```
@@ -246,10 +269,12 @@ function sendMatic(address payable wallet, uint256 amount) internal nonpayable
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| wallet | address payable |  | 
-| amount | uint256 |  | 
+| wallet | address payable | recepient | 
+| amount | uint256 | amount to be sent | 
 
 ### withdrawMaticTokens
+
+Withdraw MATIC tokens for the given user
 
 ```js
 function withdrawMaticTokens(uint256 _participantIndex) external payable onlyAdmin 
@@ -259,9 +284,11 @@ function withdrawMaticTokens(uint256 _participantIndex) external payable onlyAdm
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _participantIndex | uint256 |  | 
+| _participantIndex | uint256 | Participant index of the user for withdrawal | 
 
 ### setServiceFee
+
+Set new service fee
 
 ```js
 function setServiceFee(uint256 _fee) external nonpayable onlyAdmin 
@@ -271,7 +298,7 @@ function setServiceFee(uint256 _fee) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _fee | uint256 |  | 
+| _fee | uint256 | New fee | 
 
 ### getServiceFee
 
@@ -299,6 +326,8 @@ returns(uint256)
 
 ### setMinimumAmount
 
+Set minimum amount to withdraw
+
 ```js
 function setMinimumAmount(uint256 _minimumAmount) external nonpayable onlyAdmin 
 ```
@@ -307,7 +336,7 @@ function setMinimumAmount(uint256 _minimumAmount) external nonpayable onlyAdmin
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _minimumAmount | uint256 |  | 
+| _minimumAmount | uint256 | New minimum amount for withdrawal | 
 
 ### getMinimumAmount
 
@@ -335,31 +364,45 @@ returns(uint256)
 
 ### walletRegistered
 
+check if a wallet is registered
+
 ```js
 function walletRegistered(address _walletAddress) public view
 returns(bool)
 ```
 
+**Returns**
+
+bool true if _walletAddress is registered.
+
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _walletAddress | address |  | 
+| _walletAddress | address | Wallet address of the user | 
 
 ### userRegistered
+
+check if userId is registered
 
 ```js
 function userRegistered(string _uuid) public view
 returns(bool)
 ```
 
+**Returns**
+
+bool true if _uuid is registered.
+
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _uuid | string |  | 
+| _uuid | string | userId of the user | 
 
 ### changeTreasuryWallet
+
+change the treasury wallet
 
 ```js
 function changeTreasuryWallet(address _walletAddress) external nonpayable onlyAdmin 
@@ -369,20 +412,26 @@ function changeTreasuryWallet(address _walletAddress) external nonpayable onlyAd
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| _walletAddress | address |  | 
+| _walletAddress | address | new treasury wallet address | 
 
 ### getParticipant
+
+Get a single participany by index
 
 ```js
 function getParticipant(uint256 index) public view
 returns(struct GoArtCampaign.Participant)
 ```
 
+**Returns**
+
+Participant the corresponding participant struct
+
 **Arguments**
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| index | uint256 |  | 
+| index | uint256 | Participant index | 
 
 ### getTotalParticipants
 
@@ -398,6 +447,8 @@ returns(uint256)
 
 ### updateParticipantClaims
 
+Update the participant
+
 ```js
 function updateParticipantClaims(uint256 index, uint256 claimed, uint256 claimable) external nonpayable onlyAdmin 
 ```
@@ -406,11 +457,13 @@ function updateParticipantClaims(uint256 index, uint256 claimed, uint256 claimab
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| index | uint256 |  | 
-| claimed | uint256 |  | 
-| claimable | uint256 |  | 
+| index | uint256 | Participant index | 
+| claimed | uint256 | New claimed value | 
+| claimable | uint256 | New claimable value | 
 
 ### updateParticipantId
+
+Update userId in case of an emergency
 
 ```js
 function updateParticipantId(uint256 index, string uid) external nonpayable onlyAdmin 
@@ -420,8 +473,8 @@ function updateParticipantId(uint256 index, string uid) external nonpayable only
 
 | Name        | Type           | Description  |
 | ------------- |------------- | -----|
-| index | uint256 |  | 
-| uid | string |  | 
+| index | uint256 | Participant index | 
+| uid | string | New userId | 
 
 ## Contracts
 
